@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="sl">
+<head>
+<meta charset="UTF-8">
+<title>Login - ZestQuest</title>
+<style>
+body {
+  margin:0;
+  font-family: Arial;
+  background:#0a0a0f;
+  color:white;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+}
+
+.card {
+  background:#111118;
+  padding:40px;
+  border-radius:16px;
+  width:300px;
+}
+
+input {
+  width:100%;
+  padding:10px;
+  margin:10px 0;
+  border-radius:8px;
+  border:none;
+  background:#1a1a24;
+  color:white;
+}
+
+button {
+  width:100%;
+  padding:12px;
+  background:#c8f050;
+  border:none;
+  border-radius:10px;
+  font-weight:bold;
+  cursor:pointer;
+}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h2>ZestQuest Login</h2>
+
+  <form method="POST" action="/login">
+    <input name="username" placeholder="username" required>
+    <input name="password" type="password" placeholder="password" required>
+    <button type="submit">Vstopi</button>
+  </form>
+</div>
+
+</body>
+</html>
