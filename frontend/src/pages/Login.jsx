@@ -30,14 +30,13 @@ export default function Login() {
     }
 
     if (!data?.session) {
-      alert("Login ni uspel (ni session)")
+      alert("Login ni uspel")
       return
     }
 
-    // SHRANI SAMO TOKEN (stabilno za routing)
+    // Shrani samo token, kot si imel prej
     localStorage.setItem("user", data.session.access_token)
 
-    // redirect v app
     navigate("/app", { replace: true })
   }
 
