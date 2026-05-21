@@ -9,7 +9,9 @@ export default function Login() {
   const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
 
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
+    e.preventDefault()
+
     if (!email || !password) {
       alert("Vnesi email in geslo")
       return
@@ -29,15 +31,14 @@ export default function Login() {
       return
     }
 
-    if (!data?.session) {
-      alert("Login ni uspel (ni session)")
+    if (!data?.user?.id) {
+      alert("Login ni uspel")
       return
     }
 
-    // SHRANI SAMO TOKEN (stabilno za routing)
-    localStorage.setItem("user", data.session.access_token)
+    // Shrani Supabase UUID uporabnika, ne access tokena
+    localStorage.setItem("user", data.user.id)
 
-    // redirect v app
     navigate("/app", { replace: true })
   }
 
@@ -45,23 +46,27 @@ export default function Login() {
     <div className="auth">
       <h1>Login</h1>
 
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
+      <form onSubmit={handleLogin}>
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          autoComplete="email"
+          onChange={(e) => setEmail(e.target.value)}
+        />
 
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          autoComplete="current-password"
+          onChange={(e) => setPassword(e.target.value)}
+        />
 
-      <button onClick={handleLogin} disabled={loading}>
-        {loading ? "Logging in..." : "Login"}
-      </button>
+        <button type="submit" disabled={loading}>
+          {loading ? "Logging in..." : "Login"}
+        </button>
+      </form>
     </div>
   )
 }
