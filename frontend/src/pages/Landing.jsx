@@ -6,7 +6,7 @@ export default function Landing() {
   return (
     <div style={styles.container}>
       <div style={styles.card}>
-        <h1 style={styles.title}>ZestQuest</h1>
+        <h1 style={styles.title}>Sidebit</h1>
         <p style={styles.subtitle}>
           Dobrodošel v tvojem personaliziranem quest sistemu.
         </p>
