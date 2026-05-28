@@ -2,3 +2,10 @@ flask>=3.0
 scikit-learn>=1.4
 pandas>=2.0
 numpy>=1.26
+flask
+flask-cors
+numpy
+python-dotenv
+supabase
+scikit-learn
+gunicorn
