@@ -13,6 +13,10 @@ load_dotenv()
 app = Flask(__name__)
 CORS(app)
 
+# =========================
+# ENV
+# =========================
+
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
@@ -24,7 +28,14 @@ if not SUPABASE_KEY:
 
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
+# =========================
+# MODEL LOAD
+# =========================
+
 MODEL_PATH = os.path.join(os.path.dirname(__file__), "quest_model.pkl")
+
+if not os.path.exists(MODEL_PATH):
+    raise Exception(f"Model ne obstaja: {MODEL_PATH}")
 
 with open(MODEL_PATH, "rb") as f:
     model_data = pickle.load(f)
@@ -33,6 +44,12 @@ model = model_data["model"]
 QUESTS = model_data["quests"]
 quest_to_idx = model_data["quest_to_idx"]
 
+print(f"Model loaded ✅ | Quests: {len(QUESTS)}")
+
+
+# =========================
+# HELPERS
+# =========================
 
 def safe_int(v, default=0):
     try:
@@ -61,6 +78,10 @@ def require_valid_user_id(user_id):
 
     return str(user_id), None, None
 
+
+# =========================
+# MAPS
+# =========================
 
 RAZPOLOZENJE_MAP = {
     "utrujen": 1,
@@ -113,11 +134,17 @@ CAS_DNEVA_MAP = {
 }
 
 
+# =========================
+# DATABASE
+# =========================
+
 def ensure_profile_exists(user_id):
-    profile = supabase.table("profiles") \
-        .select("user_id") \
-        .eq("user_id", user_id) \
+    profile = (
+        supabase.table("profiles")
+        .select("user_id")
+        .eq("user_id", user_id)
         .execute()
+    )
 
     if not profile.data:
         supabase.table("profiles").insert({
@@ -129,10 +156,12 @@ def ensure_profile_exists(user_id):
 
 
 def get_completed_quest_ids(user_id):
-    res = supabase.table("completed_quests") \
-        .select("quest_id") \
-        .eq("user_id", user_id) \
+    res = (
+        supabase.table("completed_quests")
+        .select("quest_id")
+        .eq("user_id", user_id)
         .execute()
+    )
 
     return [row["quest_id"] for row in res.data]
 
@@ -140,10 +169,12 @@ def get_completed_quest_ids(user_id):
 def update_profile_stats(user_id, xp):
     ensure_profile_exists(user_id)
 
-    profile = supabase.table("profiles") \
-        .select("xp, streak") \
-        .eq("user_id", user_id) \
+    profile = (
+        supabase.table("profiles")
+        .select("xp, streak")
+        .eq("user_id", user_id)
         .execute()
+    )
 
     profile_data = profile.data[0] if profile.data else {}
 
@@ -153,18 +184,22 @@ def update_profile_stats(user_id, xp):
     new_xp = current_xp + xp
     new_streak = current_streak + 1
 
-    supabase.table("profiles") \
+    (
+        supabase.table("profiles")
         .update({
             "xp": new_xp,
             "streak": new_streak,
-        }) \
-        .eq("user_id", user_id) \
+        })
+        .eq("user_id", user_id)
         .execute()
+    )
 
-    completed_count = supabase.table("completed_quests") \
-        .select("id", count="exact") \
-        .eq("user_id", user_id) \
+    completed_count = (
+        supabase.table("completed_quests")
+        .select("id", count="exact")
+        .eq("user_id", user_id)
         .execute()
+    )
 
     return {
         "xp": new_xp,
@@ -172,6 +207,10 @@ def update_profile_stats(user_id, xp):
         "opravljeni": completed_count.count or 0,
     }
 
+
+# =========================
+# FEATURE ENGINEERING
+# =========================
 
 def pretvori(body):
     return np.array([[
@@ -190,10 +229,30 @@ def pretvori(body):
     ]])
 
 
+# =========================
+# ROUTES
+# =========================
+
+@app.route("/")
+def home():
+    return jsonify({
+        "status": "online",
+        "quests_loaded": len(QUESTS)
+    })
+
+
+@app.route("/api/health")
+def health():
+    return jsonify({
+        "success": True
+    })
+
+
 @app.route("/api/user-stats", methods=["GET"])
 def user_stats():
     try:
         user_id = request.args.get("user_id")
+
         user_id, error_response, status = require_valid_user_id(user_id)
 
         if error_response:
@@ -201,15 +260,19 @@ def user_stats():
 
         ensure_profile_exists(user_id)
 
-        profile = supabase.table("profiles") \
-            .select("xp, streak") \
-            .eq("user_id", user_id) \
+        profile = (
+            supabase.table("profiles")
+            .select("xp, streak")
+            .eq("user_id", user_id)
             .execute()
+        )
 
-        completed_count = supabase.table("completed_quests") \
-            .select("id", count="exact") \
-            .eq("user_id", user_id) \
+        completed_count = (
+            supabase.table("completed_quests")
+            .select("id", count="exact")
+            .eq("user_id", user_id)
             .execute()
+        )
 
         profile_data = profile.data[0] if profile.data else {}
 
@@ -228,6 +291,7 @@ def user_stats():
 def predict():
     try:
         body = request.get_json(force=True)
+
         user_id = body.get("user_id")
 
         user_id, error_response, status = require_valid_user_id(user_id)
@@ -250,6 +314,7 @@ def predict():
             }), 404
 
         X_base = pretvori(body)
+
         cas_na_voljo = X_base[0][2]
 
         filtered_quests = [
@@ -287,6 +352,7 @@ def predict():
 
         for model_score, q in zip(model_scores, sample_quests):
             score = float(model_score)
+
             score += q.get("xp", 0) * 0.05
             score += q.get("rarity", 1) * 2
             score += random.uniform(-3, 3)
@@ -325,7 +391,10 @@ def predict():
 
     except Exception as e:
         print("PREDICT ERROR:", e)
-        return jsonify({"error": str(e)}), 500
+
+        return jsonify({
+            "error": str(e)
+        }), 500
 
 
 @app.route("/api/opravi", methods=["POST"])
@@ -356,11 +425,13 @@ def opravi():
 
         ensure_profile_exists(user_id)
 
-        existing = supabase.table("completed_quests") \
-            .select("id") \
-            .eq("user_id", user_id) \
-            .eq("quest_id", quest_id) \
+        existing = (
+            supabase.table("completed_quests")
+            .select("id")
+            .eq("user_id", user_id)
+            .eq("quest_id", quest_id)
             .execute()
+        )
 
         if existing.data:
             return jsonify({
@@ -368,12 +439,14 @@ def opravi():
                 "error": "Quest je že opravljen"
             }), 409
 
-        completed_response = supabase.table("completed_quests") \
+        completed_response = (
+            supabase.table("completed_quests")
             .insert({
                 "user_id": user_id,
                 "quest_id": quest_id
-            }) \
+            })
             .execute()
+        )
 
         stats = update_profile_stats(user_id, xp)
 
@@ -392,7 +465,15 @@ def opravi():
         }), 500
 
 
+# =========================
+# LOCAL RUN
+# =========================
+
 if __name__ == "__main__":
-    print("Backend running → http://127.0.0.1:5000")
-    print(f"Quests loaded: {len(QUESTS)}")
-    app.run(host="127.0.0.1", port=5000, debug=False, use_reloader=False)
+    print("Backend running → https://127.0.0.1:5000")
+
+    app.run(
+        host="0.0.0.0",
+        port=5000,
+        debug=False
+    )
