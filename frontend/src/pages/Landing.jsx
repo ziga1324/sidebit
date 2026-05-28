@@ -18,7 +18,7 @@ export default function Landing() {
 
           <button style={styles.register} onClick={() => navigate("/register")}>
             Register
-          </button>s
+          </button>
         </div>
       </div>
     </div>
