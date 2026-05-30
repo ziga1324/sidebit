@@ -1,19 +1,3 @@
-"""
-ZestQuest - Pomočnik za uporabo modela na spletni strani
-=========================================================
-Naloži model.pkl, encoders.pkl in label_enc.pkl ter
-izpostavi enostavno funkcijo za napovedovanje.
-
-Primer (Flask / FastAPI):
-    from model_helper import ZestQuestPredictor
-    predictor = ZestQuestPredictor()
-    rezultat = predictor.napovej({
-        "osebnost": "introvert",
-        "cas_dneva": "vecer",
-        ...
-    })
-"""
-
 import os
 import pickle
 import pandas as pd
@@ -24,7 +8,6 @@ KATEGORICNE_KOLONE = [
 ]
 NUMERICNE_KOLONE = ["starost", "xp_skupaj", "streak_dni", "opravljeni_questi"]
 
-# Vse veljavne vrednosti – koristno za validacijo v API-ju
 VELJAVNE_VREDNOSTI = {
     "osebnost":         ["introvert", "ekstrovert", "ambivert"],
     "cas_dneva":        ["jutro", "dopoldne", "popoldne", "vecer", "noc"],

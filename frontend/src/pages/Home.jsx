@@ -1,15 +1,12 @@
 import { useEffect, useState } from "react"
+import { useNavigate } from "react-router-dom"
 import "./hom_e.css"
 
-const API_URL = "http://127.0.0.1:5000"
-
-// Za testiranje mora biti UUID, ne številka 1.
-const CURRENT_USER = {
-  id: "550e8400-e29b-41d4-a716-446655440000",
-  username: "Guest",
-}
+const API_URL = import.meta.env.VITE_API_URL || ""
 
 export default function Home() {
+  const navigate = useNavigate()
+
   const [stats, setStats] = useState({
     xp: 0,
     streak: 0,
@@ -28,25 +25,37 @@ export default function Home() {
   })
 
   const [quest, setQuest] = useState(null)
+  const [alternativni, setAlternativni] = useState([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
 
+  const user_id = localStorage.getItem("user")
+
   useEffect(() => {
+    if (!user_id || user_id === "null" || user_id === "undefined") {
+      navigate("/login", { replace: true })
+      return
+    }
+
     naloziUserStat()
   }, [])
+
+  function logout() {
+    localStorage.removeItem("user")
+    navigate("/login", { replace: true })
+  }
 
   async function naloziUserStat() {
     try {
       setError("")
 
       const res = await fetch(
-        `${API_URL}/api/user-stats?user_id=${CURRENT_USER.id}`
+        `${API_URL}/api/user-stats?user_id=${user_id}`
       )
 
       const data = await res.json()
 
-      if (!res.ok) {
-        console.log("Napaka pri statistiki:", data)
+      if (!res.ok || data.success === false) {
         setError(data.error || "Napaka pri nalaganju statistike.")
         return
       }
@@ -67,6 +76,7 @@ export default function Home() {
       setLoading(true)
       setError("")
       setQuest(null)
+      setAlternativni([])
 
       const res = await fetch(`${API_URL}/api/predict`, {
         method: "POST",
@@ -74,37 +84,33 @@ export default function Home() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          user_id: CURRENT_USER.id,
+          user_id,
           ...form,
         }),
       })
 
       const data = await res.json()
 
-      if (!res.ok) {
-        console.log("Backend error:", data)
+      if (!res.ok || data.success === false) {
         setError(data.error || "Napaka pri iskanju questa.")
         return
       }
 
-      const q = data.quest
-
-      if (!q) {
-        console.log("Ni quest podatkov:", data)
+      if (!data.quest) {
         setError("Backend ni vrnil questa.")
         return
       }
 
       setQuest({
-        id: q.id,
-        naslov: q.naslov || "Brez naslova",
-        opis: q.opis || "Brez opisa",
-        xp: q.xp || 0,
-        cas_min: q.cas_min || 0,
-        kat: q.kat || "",
+        id: data.quest.id,
+        naslov: data.quest.naslov || "Brez naslova",
+        opis: data.quest.opis || "Brez opisa",
+        xp: data.quest.xp || 0,
+        cas_min: data.quest.cas_min || 0,
+        kat: data.quest.kat || "",
       })
 
-      console.log("Prejeto quest:", data)
+      setAlternativni(data.alternativni || [])
     } catch (err) {
       console.log("Fetch error predict:", err)
       setError("Backend ni dosegljiv.")
@@ -126,7 +132,7 @@ export default function Home() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          user_id: CURRENT_USER.id,
+          user_id,
           quest_id: quest.id,
           xp: quest.xp || 0,
         }),
@@ -134,8 +140,7 @@ export default function Home() {
 
       const data = await res.json()
 
-      if (!res.ok) {
-        console.log("Napaka pri shranjevanju:", data)
+      if (!res.ok || data.success === false) {
         setError(data.error || "Napaka pri shranjevanju questa.")
         return
       }
@@ -147,6 +152,7 @@ export default function Home() {
       })
 
       setQuest(null)
+      setAlternativni([])
     } catch (err) {
       console.log("Fetch error opraviQuest:", err)
       setError("Backend ni dosegljiv.")
@@ -165,13 +171,11 @@ export default function Home() {
           <div>🔥 {stats.streak}</div>
           <div>✓ {stats.opravljeni}</div>
         </div>
+
+        <button onClick={logout}>Logout</button>
       </header>
 
-      {error && (
-        <div className="error">
-          {error}
-        </div>
-      )}
+      {error && <div className="error">{error}</div>}
 
       <div className="form-card">
         <select
@@ -188,9 +192,7 @@ export default function Home() {
 
         <select
           value={form.energija}
-          onChange={(e) =>
-            setForm({ ...form, energija: e.target.value })
-          }
+          onChange={(e) => setForm({ ...form, energija: e.target.value })}
         >
           <option value="nizka">Nizka</option>
           <option value="srednja">Srednja</option>
@@ -199,9 +201,7 @@ export default function Home() {
 
         <select
           value={form.lokacija}
-          onChange={(e) =>
-            setForm({ ...form, lokacija: e.target.value })
-          }
+          onChange={(e) => setForm({ ...form, lokacija: e.target.value })}
         >
           <option value="doma">Doma</option>
           <option value="zunaj">Zunaj</option>
@@ -210,9 +210,7 @@ export default function Home() {
 
         <select
           value={form.skupina}
-          onChange={(e) =>
-            setForm({ ...form, skupina: e.target.value })
-          }
+          onChange={(e) => setForm({ ...form, skupina: e.target.value })}
         >
           <option value="sam">Sam</option>
           <option value="prijatelji">Prijatelji</option>
@@ -233,9 +231,7 @@ export default function Home() {
 
         <select
           value={form.osebnost}
-          onChange={(e) =>
-            setForm({ ...form, osebnost: e.target.value })
-          }
+          onChange={(e) => setForm({ ...form, osebnost: e.target.value })}
         >
           <option value="introvert">Introvert</option>
           <option value="ambivert">Ambivert</option>
@@ -244,9 +240,7 @@ export default function Home() {
 
         <select
           value={form.vreme}
-          onChange={(e) =>
-            setForm({ ...form, vreme: e.target.value })
-          }
+          onChange={(e) => setForm({ ...form, vreme: e.target.value })}
         >
           <option value="soncno">Sončno</option>
           <option value="oblacno">Oblačno</option>
@@ -255,9 +249,7 @@ export default function Home() {
 
         <select
           value={form.cas_dneva}
-          onChange={(e) =>
-            setForm({ ...form, cas_dneva: e.target.value })
-          }
+          onChange={(e) => setForm({ ...form, cas_dneva: e.target.value })}
         >
           <option value="jutro">Jutro</option>
           <option value="popoldne">Popoldne</option>
@@ -282,6 +274,23 @@ export default function Home() {
           <button onClick={opraviQuest} disabled={loading}>
             Opravljeno
           </button>
+        </div>
+      )}
+
+      {alternativni.length > 0 && (
+        <div className="quest-card">
+          <h3>Alternative</h3>
+
+          {alternativni.map((q) => (
+            <div key={q.id}>
+              <strong>{q.naslov}</strong>
+              <div>{q.opis}</div>
+              <small>
+                XP: {q.xp} | Čas: {q.cas_min} min
+              </small>
+              <hr />
+            </div>
+          ))}
         </div>
       )}
     </div>

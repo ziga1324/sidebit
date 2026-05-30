@@ -11,26 +11,27 @@ from uuid import UUID
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)
 
-# =========================
-# ENV
-# =========================
+CORS(app, resources={
+    r"/api/*": {
+        "origins": [
+            "http://localhost:5173",
+            "http://127.0.0.1:5173",
+            os.getenv("FRONTEND_URL", "*")
+        ]
+    }
+})
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
 if not SUPABASE_URL:
-    raise Exception("Manjka SUPABASE_URL v .env")
+    raise Exception("Manjka SUPABASE_URL")
 
 if not SUPABASE_KEY:
-    raise Exception("Manjka SUPABASE_KEY v .env")
+    raise Exception("Manjka SUPABASE_KEY")
 
 supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
-
-# =========================
-# MODEL LOAD
-# =========================
 
 MODEL_PATH = os.path.join(os.path.dirname(__file__), "quest_model.pkl")
 
@@ -46,10 +47,6 @@ quest_to_idx = model_data["quest_to_idx"]
 
 print(f"Model loaded ✅ | Quests: {len(QUESTS)}")
 
-
-# =========================
-# HELPERS
-# =========================
 
 def safe_int(v, default=0):
     try:
@@ -68,20 +65,17 @@ def is_valid_uuid(value):
 
 def require_valid_user_id(user_id):
     if not user_id:
-        return None, jsonify({"error": "Manjka user_id"}), 400
+        return None, jsonify({"success": False, "error": "Manjka user_id"}), 400
 
     if not is_valid_uuid(user_id):
         return None, jsonify({
+            "success": False,
             "error": "user_id ni pravilen UUID",
             "received_user_id": user_id
         }), 400
 
     return str(user_id), None, None
 
-
-# =========================
-# MAPS
-# =========================
 
 RAZPOLOZENJE_MAP = {
     "utrujen": 1,
@@ -133,10 +127,6 @@ CAS_DNEVA_MAP = {
     "vecer": 2,
 }
 
-
-# =========================
-# DATABASE
-# =========================
 
 def ensure_profile_exists(user_id):
     profile = (
@@ -208,10 +198,6 @@ def update_profile_stats(user_id, xp):
     }
 
 
-# =========================
-# FEATURE ENGINEERING
-# =========================
-
 def pretvori(body):
     return np.array([[
         RAZPOLOZENJE_MAP.get(body.get("razpolozenje", "vesel"), 2),
@@ -229,12 +215,8 @@ def pretvori(body):
     ]])
 
 
-# =========================
-# ROUTES
-# =========================
-
 @app.route("/")
-def home():
+def root():
     return jsonify({
         "status": "online",
         "quests_loaded": len(QUESTS)
@@ -243,16 +225,13 @@ def home():
 
 @app.route("/api/health")
 def health():
-    return jsonify({
-        "success": True
-    })
+    return jsonify({"success": True})
 
 
 @app.route("/api/user-stats", methods=["GET"])
 def user_stats():
     try:
         user_id = request.args.get("user_id")
-
         user_id, error_response, status = require_valid_user_id(user_id)
 
         if error_response:
@@ -277,6 +256,7 @@ def user_stats():
         profile_data = profile.data[0] if profile.data else {}
 
         return jsonify({
+            "success": True,
             "xp": profile_data.get("xp") or 0,
             "streak": profile_data.get("streak") or 0,
             "opravljeni": completed_count.count or 0,
@@ -284,14 +264,13 @@ def user_stats():
 
     except Exception as e:
         print("USER-STATS ERROR:", e)
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 @app.route("/api/predict", methods=["POST"])
 def predict():
     try:
         body = request.get_json(force=True)
-
         user_id = body.get("user_id")
 
         user_id, error_response, status = require_valid_user_id(user_id)
@@ -310,11 +289,11 @@ def predict():
 
         if not available_quests:
             return jsonify({
+                "success": False,
                 "error": "Opravil si že vse queste 🎉"
             }), 404
 
         X_base = pretvori(body)
-
         cas_na_voljo = X_base[0][2]
 
         filtered_quests = [
@@ -334,10 +313,8 @@ def predict():
 
         for q in sample_quests:
             quest_idx = quest_to_idx.get(q["id"], 0)
-
             X = X_base.copy()
             X[0][-1] = quest_idx
-
             X_batch.append(X[0])
 
         X_batch = np.array(X_batch)
@@ -352,11 +329,9 @@ def predict():
 
         for model_score, q in zip(model_scores, sample_quests):
             score = float(model_score)
-
             score += q.get("xp", 0) * 0.05
             score += q.get("rarity", 1) * 2
             score += random.uniform(-3, 3)
-
             ranked.append((score, q))
 
         ranked.sort(reverse=True, key=lambda x: x[0])
@@ -377,6 +352,7 @@ def predict():
         ]
 
         return jsonify({
+            "success": True,
             "quest": {
                 "id": best["id"],
                 "naslov": best["naslov"],
@@ -391,10 +367,7 @@ def predict():
 
     except Exception as e:
         print("PREDICT ERROR:", e)
-
-        return jsonify({
-            "error": str(e)
-        }), 500
+        return jsonify({"success": False, "error": str(e)}), 500
 
 
 @app.route("/api/opravi", methods=["POST"])
@@ -409,11 +382,7 @@ def opravi():
         user_id, error_response, status = require_valid_user_id(user_id)
 
         if error_response:
-            return jsonify({
-                "success": False,
-                "error": error_response.get_json().get("error"),
-                "received_user_id": body.get("user_id")
-            }), status
+            return error_response, status
 
         if not quest_id:
             return jsonify({
@@ -458,22 +427,9 @@ def opravi():
 
     except Exception as e:
         print("OPRAVI ERROR:", e)
+        return jsonify({"success": False, "error": str(e)}), 500
 
-        return jsonify({
-            "success": False,
-            "error": str(e)
-        }), 500
-
-
-# =========================
-# LOCAL RUN
-# =========================
 
 if __name__ == "__main__":
-    print("Backend running → https://127.0.0.1:5000")
-
-    app.run(
-        host="0.0.0.0",
-        port=5000,
-        debug=False
-    )
+    print("Backend running → http://127.0.0.1:5000")
+    app.run(host="0.0.0.0", port=5000, debug=False)
