@@ -15,10 +15,13 @@ app = Flask(__name__)
 CORS(app, resources={
     r"/api/*": {
         "origins": [
-            "http://localhost:5173",
-            "http://127.0.0.1:5173",
-            os.getenv("FRONTEND_URL", "*")
-        ]
+            "https://www.sidebit.si",
+            "https://sidebit.si",
+            "https://sidebit.vercel.app",
+            "https://sidebit-2qsbgyqgv-ziga1324s-projects.vercel.app",
+        ],
+        "methods": ["GET", "POST", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"],
     }
 })
 
