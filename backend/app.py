@@ -12,18 +12,7 @@ load_dotenv()
 
 app = Flask(__name__)
 
-CORS(app, resources={
-    r"/api/*": {
-        "origins": [
-            "https://www.sidebit.si",
-            "https://sidebit.si",
-            "https://sidebit.vercel.app",
-            "https://sidebit-2qsbgyqgv-ziga1324s-projects.vercel.app",
-        ],
-        "methods": ["GET", "POST", "OPTIONS"],
-        "allow_headers": ["Content-Type", "Authorization"],
-    }
-})
+CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
