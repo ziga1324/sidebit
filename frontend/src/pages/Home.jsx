@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import "./hom_e.css"
+import { Link, useNavigate } from "react-router-dom"
 
 const API_URL = import.meta.env.VITE_API_URL || ""
 
@@ -165,15 +166,21 @@ export default function Home() {
   return (
     <div className="app">
       <header>
-        <div className="logo">ZestQuest</div>
+  <div className="logo">ZestQuest</div>
 
-        <div className="stats">
-          <div>XP {stats.xp}</div>
-          <div>✓ {stats.opravljeni}</div>
-        </div>
+  <div className="stats">
+    <div>XP {stats.xp}</div>
+    <div>✓ {stats.opravljeni}</div>
+  </div>
 
-        <button onClick={logout}>Logout</button>
-      </header>
+  <div style={{ display: "flex", gap: "10px" }}>
+    <Link to="/about">
+      <button>About us</button>
+    </Link>
+
+    <button onClick={logout}>Logout</button>
+  </div>
+</header>
 
       {error && <div className="error">{error}</div>}
 
