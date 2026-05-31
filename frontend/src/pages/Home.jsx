@@ -9,7 +9,6 @@ export default function Home() {
 
   const [stats, setStats] = useState({
     xp: 0,
-    streak: 0,
     opravljeni: 0,
   })
 
@@ -62,7 +61,6 @@ export default function Home() {
 
       setStats({
         xp: data.xp || 0,
-        streak: data.streak || 0,
         opravljeni: data.opravljeni || 0,
       })
     } catch (err) {
@@ -147,7 +145,6 @@ export default function Home() {
 
       setStats({
         xp: data.stats?.xp || 0,
-        streak: data.stats?.streak || 0,
         opravljeni: data.stats?.opravljeni || 0,
       })
 
@@ -172,7 +169,6 @@ export default function Home() {
 
         <div className="stats">
           <div>XP {stats.xp}</div>
-          <div>🔥 {stats.streak}</div>
           <div>✓ {stats.opravljeni}</div>
         </div>
 
@@ -288,9 +284,7 @@ export default function Home() {
           <div>XP: {quest.xp}</div>
           <div>Čas: {quest.cas_min} min</div>
 
-          {quest.kat && (
-            <div>Kategorija: {quest.kat}</div>
-          )}
+          {quest.kat && <div>Kategorija: {quest.kat}</div>}
 
           <button
             onClick={() => opraviQuest(quest)}

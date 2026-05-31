@@ -133,7 +133,6 @@ def ensure_profile_exists(user_id):
             "user_id": user_id,
             "username": "Guest",
             "xp": 0,
-            "streak": 0,
         }).execute()
 
 
@@ -153,7 +152,7 @@ def update_profile_stats(user_id, xp):
 
     profile = (
         supabase.table("profiles")
-        .select("xp, streak")
+        .select("xp")
         .eq("user_id", user_id)
         .execute()
     )
@@ -161,16 +160,12 @@ def update_profile_stats(user_id, xp):
     profile_data = profile.data[0] if profile.data else {}
 
     current_xp = profile_data.get("xp") or 0
-    current_streak = profile_data.get("streak") or 0
-
     new_xp = current_xp + xp
-    new_streak = current_streak + 1
 
     (
         supabase.table("profiles")
         .update({
             "xp": new_xp,
-            "streak": new_streak,
         })
         .eq("user_id", user_id)
         .execute()
@@ -185,7 +180,6 @@ def update_profile_stats(user_id, xp):
 
     return {
         "xp": new_xp,
-        "streak": new_streak,
         "opravljeni": completed_count.count or 0,
     }
 
@@ -233,7 +227,7 @@ def user_stats():
 
         profile = (
             supabase.table("profiles")
-            .select("xp, streak")
+            .select("xp")
             .eq("user_id", user_id)
             .execute()
         )
@@ -250,7 +244,6 @@ def user_stats():
         return jsonify({
             "success": True,
             "xp": profile_data.get("xp") or 0,
-            "streak": profile_data.get("streak") or 0,
             "opravljeni": completed_count.count or 0,
         })
 
