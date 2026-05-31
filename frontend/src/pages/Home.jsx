@@ -297,9 +297,9 @@ export default function Home() {
         </button>
       </div>
 
-      <div className="logo">Se opravičujemo za počasnost aplikacije, tukaj je uradno opravičilo.</div>
       {gifVisible && !quest && (
         <div className="quest-card">
+          <h1>Se opravičujemo za počasnost aplikacije, tukaj je uradno opravičilo.</h1>
           <img
             src="/sonic-fortnite-dance.gif"
             alt="Loading..."
