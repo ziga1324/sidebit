@@ -119,8 +119,8 @@ export default function Home() {
     }
   }
 
-  async function opraviQuest() {
-    if (!quest) return
+  async function opraviQuest(izbraniQuest = quest) {
+    if (!izbraniQuest) return
 
     try {
       setLoading(true)
@@ -133,8 +133,8 @@ export default function Home() {
         },
         body: JSON.stringify({
           user_id,
-          quest_id: quest.id,
-          xp: quest.xp || 0,
+          quest_id: izbraniQuest.id,
+          xp: izbraniQuest.xp || 0,
         }),
       })
 
@@ -159,6 +159,10 @@ export default function Home() {
     } finally {
       setLoading(false)
     }
+  }
+
+  function zavrniQuest() {
+    setQuest(null)
   }
 
   return (
@@ -192,7 +196,9 @@ export default function Home() {
 
         <select
           value={form.energija}
-          onChange={(e) => setForm({ ...form, energija: e.target.value })}
+          onChange={(e) =>
+            setForm({ ...form, energija: e.target.value })
+          }
         >
           <option value="nizka">Nizka</option>
           <option value="srednja">Srednja</option>
@@ -201,7 +207,9 @@ export default function Home() {
 
         <select
           value={form.lokacija}
-          onChange={(e) => setForm({ ...form, lokacija: e.target.value })}
+          onChange={(e) =>
+            setForm({ ...form, lokacija: e.target.value })
+          }
         >
           <option value="doma">Doma</option>
           <option value="zunaj">Zunaj</option>
@@ -210,7 +218,9 @@ export default function Home() {
 
         <select
           value={form.skupina}
-          onChange={(e) => setForm({ ...form, skupina: e.target.value })}
+          onChange={(e) =>
+            setForm({ ...form, skupina: e.target.value })
+          }
         >
           <option value="sam">Sam</option>
           <option value="prijatelji">Prijatelji</option>
@@ -220,7 +230,10 @@ export default function Home() {
         <select
           value={form.cas_razpolozljiv}
           onChange={(e) =>
-            setForm({ ...form, cas_razpolozljiv: e.target.value })
+            setForm({
+              ...form,
+              cas_razpolozljiv: e.target.value,
+            })
           }
         >
           <option value="0_5min">0–5 min</option>
@@ -231,7 +244,9 @@ export default function Home() {
 
         <select
           value={form.osebnost}
-          onChange={(e) => setForm({ ...form, osebnost: e.target.value })}
+          onChange={(e) =>
+            setForm({ ...form, osebnost: e.target.value })
+          }
         >
           <option value="introvert">Introvert</option>
           <option value="ambivert">Ambivert</option>
@@ -240,7 +255,9 @@ export default function Home() {
 
         <select
           value={form.vreme}
-          onChange={(e) => setForm({ ...form, vreme: e.target.value })}
+          onChange={(e) =>
+            setForm({ ...form, vreme: e.target.value })
+          }
         >
           <option value="soncno">Sončno</option>
           <option value="oblacno">Oblačno</option>
@@ -249,7 +266,9 @@ export default function Home() {
 
         <select
           value={form.cas_dneva}
-          onChange={(e) => setForm({ ...form, cas_dneva: e.target.value })}
+          onChange={(e) =>
+            setForm({ ...form, cas_dneva: e.target.value })
+          }
         >
           <option value="jutro">Jutro</option>
           <option value="popoldne">Popoldne</option>
@@ -269,10 +288,22 @@ export default function Home() {
           <div>XP: {quest.xp}</div>
           <div>Čas: {quest.cas_min} min</div>
 
-          {quest.kat && <div>Kategorija: {quest.kat}</div>}
+          {quest.kat && (
+            <div>Kategorija: {quest.kat}</div>
+          )}
 
-          <button onClick={opraviQuest} disabled={loading}>
+          <button
+            onClick={() => opraviQuest(quest)}
+            disabled={loading}
+          >
             Opravljeno
+          </button>
+
+          <button
+            onClick={zavrniQuest}
+            disabled={loading}
+          >
+            Zavrni
           </button>
         </div>
       )}
@@ -285,9 +316,20 @@ export default function Home() {
             <div key={q.id}>
               <strong>{q.naslov}</strong>
               <div>{q.opis}</div>
+
               <small>
                 XP: {q.xp} | Čas: {q.cas_min} min
               </small>
+
+              <br />
+
+              <button
+                onClick={() => opraviQuest(q)}
+                disabled={loading}
+              >
+                Opravi ta quest
+              </button>
+
               <hr />
             </div>
           ))}
