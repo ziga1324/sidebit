@@ -2,7 +2,6 @@ import { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import "./hom_e.css"
 
-
 const API_URL = import.meta.env.VITE_API_URL || ""
 
 export default function Home() {
@@ -27,6 +26,7 @@ export default function Home() {
   const [quest, setQuest] = useState(null)
   const [alternativni, setAlternativni] = useState([])
   const [loading, setLoading] = useState(false)
+  const [gifVisible, setGifVisible] = useState(false)
   const [error, setError] = useState("")
 
   const user_id = localStorage.getItem("user")
@@ -39,6 +39,20 @@ export default function Home() {
 
     naloziUserStat()
   }, [])
+
+  useEffect(() => {
+    let timer
+
+    if (loading) {
+      timer = setTimeout(() => {
+        setGifVisible(true)
+      }, 2000)
+    } else {
+      setGifVisible(false)
+    }
+
+    return () => clearTimeout(timer)
+  }, [loading])
 
   function logout() {
     localStorage.removeItem("user")
@@ -166,21 +180,21 @@ export default function Home() {
   return (
     <div className="app">
       <header>
-  <div className="logo">Sidebit</div>
+        <div className="logo">Sidebit</div>
 
-  <div className="stats">
-    <div>XP {stats.xp}</div>
-    <div>✓ {stats.opravljeni}</div>
-  </div>
+        <div className="stats">
+          <div>XP {stats.xp}</div>
+          <div>✓ {stats.opravljeni}</div>
+        </div>
 
-  <div style={{ display: "flex", gap: "10px" }}>
-    <Link to="/about">
-      <button>About us</button>
-    </Link>
+        <div style={{ display: "flex", gap: "10px" }}>
+          <Link to="/about">
+            <button>About us</button>
+          </Link>
 
-    <button onClick={logout}>Logout</button>
-  </div>
-</header>
+          <button onClick={logout}>Logout</button>
+        </div>
+      </header>
 
       {error && <div className="error">{error}</div>}
 
@@ -282,6 +296,22 @@ export default function Home() {
           {loading ? "Nalagam..." : "Najdi quest"}
         </button>
       </div>
+
+      <div className="logo">Se opravičujemo za počasnost aplikacije, tukaj je uradno opravičilo.</div>
+      {gifVisible && !quest && (
+        <div className="quest-card">
+          <img
+            src="/sonic-fortnite-dance.gif"
+            alt="Loading..."
+            style={{
+              width: "220px",
+              display: "block",
+              margin: "0 auto",
+              borderRadius: "16px",
+            }}
+          />
+        </div>
+      )}
 
       {quest && (
         <div className="quest-card">
