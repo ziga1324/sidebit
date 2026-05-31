@@ -24,25 +24,25 @@ export default function Register() {
     const user = data?.user
 
     if (user) {
-      const { error: profileError } = await supabase
-        .from("profiles")
-        .insert([
-          {
-            user_id: user.id,
-            username: email,
-            xp: 0
-          }
-        ])
-
-      if (profileError) {
-        console.log("PROFILE ERROR:", profileError)
-        alert("User created but profile failed")
-        return
+  const { error: profileError } = await supabase
+    .from("profiles")
+    .upsert(
+      {
+        user_id: user.id,
+        username: email,
+        xp: 0,
+      },
+      {
+        onConflict: "user_id",
       }
-    }
+    )
 
-    alert("Račun ustvarjen 👍")
-    navigate("/login")
+  if (profileError) {
+    console.log("PROFILE ERROR:", profileError)
+    alert("User created but profile failed")
+    return
+  }
+}
   }
 
   return (
