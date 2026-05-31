@@ -1,25 +1,26 @@
 :root {
-  --bg: #d7dfdc;
   --bg2: rgba(24, 36, 34, 0.88);
   --bg3: rgba(38, 56, 53, 0.95);
-
   --border: rgba(220, 235, 228, 0.14);
-
   --text: #edf2ed;
   --muted: #b8c6bf;
-
   --accent: #dfe6d8;
   --accent2: #9eb7ae;
-  --accent3: #6b8178;
-
+  --dark: #17201d;
   --radius: 18px;
-
   --font-head: Georgia, serif;
   --font-mono: "Courier New", monospace;
 }
 
-body {
+html,
+body,
+#root {
+  min-height: 100%;
   margin: 0;
+}
+
+body {
+  min-height: 100vh;
   background:
     linear-gradient(
       180deg,
@@ -27,12 +28,18 @@ body {
       #90a59f 45%,
       #52625d 100%
     );
+  background-attachment: fixed;
+  background-repeat: no-repeat;
   color: var(--text);
   font-family: var(--font-mono);
 }
 
-/* layout */
+* {
+  box-sizing: border-box;
+}
+
 .app {
+  min-height: 100vh;
   max-width: 900px;
   margin: 0 auto;
   padding: 20px;
@@ -43,38 +50,44 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: 14px;
   padding: 20px 0;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid rgba(23, 32, 29, 0.25);
 }
 
 .logo {
   font-family: var(--font-head);
-  font-size: 28px;
+  font-size: 30px;
   font-weight: 700;
   letter-spacing: 3px;
-  color: #f1f3ec;
+  color: var(--dark);
 }
 
-.logo-dot {
-  width: 10px;
-  height: 10px;
-  background: #dde5da;
-  border-radius: 50%;
-}
-
-/* stats */
 .stats {
   display: flex;
   gap: 10px;
 }
 
+.stats div,
 .stat {
-  background: var(--bg2);
-  border: 1px solid var(--border);
+  background: rgba(24, 36, 34, 0.14);
+  border: 1px solid rgba(24, 36, 34, 0.25);
   padding: 8px 12px;
   border-radius: 12px;
-  font-size: 12px;
-  color: var(--muted);
+  font-size: 13px;
+  color: var(--dark);
+  font-weight: 700;
+}
+
+/* header buttons */
+header button {
+  background: var(--dark);
+  color: var(--text);
+  border: none;
+  padding: 9px 13px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
 }
 
 /* cards */
@@ -86,85 +99,156 @@ header {
   padding: 22px;
   margin-top: 20px;
   backdrop-filter: blur(10px);
-  box-shadow:
-    0 8px 30px rgba(0,0,0,0.25);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
 }
 
-/* selects */
+/* form */
+.form-card {
+  display: grid;
+  gap: 10px;
+}
+
 select {
   width: 100%;
-  margin-bottom: 10px;
   padding: 12px;
   border-radius: 12px;
   border: 1px solid var(--border);
   background: var(--bg3);
   color: var(--text);
   font-family: var(--font-mono);
+  outline: none;
 }
 
-/* buttons */
-.btn-quest {
+select:focus {
+  border-color: rgba(223, 230, 216, 0.55);
+}
+
+/* main buttons */
+button {
+  transition: 0.2s ease;
+}
+
+button:hover {
+  transform: translateY(-1px);
+  opacity: 0.92;
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.form-card > button {
   width: 100%;
   padding: 14px;
   border-radius: 12px;
   border: none;
   background: var(--accent);
-  color: #17201d;
-  font-weight: 700;
+  color: var(--dark);
+  font-weight: 800;
   cursor: pointer;
-  margin-top: 10px;
+  margin-top: 6px;
 }
 
-.btn-opravi {
-  background: var(--accent);
-  color: #17201d;
-  border: none;
-  padding: 10px 14px;
-  border-radius: 10px;
-  margin-right: 10px;
-  cursor: pointer;
-  font-weight: 700;
-}
-
-.btn-preskoci {
-  background: transparent;
-  border: 1px solid var(--border);
-  padding: 10px 14px;
-  border-radius: 10px;
-  color: var(--muted);
-  cursor: pointer;
+/* error */
+.error {
+  margin-top: 20px;
+  padding: 14px;
+  border-radius: 12px;
+  background: rgba(120, 30, 30, 0.75);
+  border: 1px solid rgba(255, 150, 150, 0.25);
+  color: #ffecec;
 }
 
 /* quest */
 .quest-card h2 {
   margin: 0 0 12px 0;
   font-family: var(--font-head);
-  font-size: 28px;
+  font-size: 30px;
   letter-spacing: 1px;
   color: #f3f5ef;
 }
 
-.quest-actions {
-  margin-top: 15px;
-  display: flex;
-  gap: 10px;
+.quest-card h3 {
+  margin-top: 0;
+  font-family: var(--font-head);
+  font-size: 24px;
+  color: #f3f5ef;
 }
 
-/* static quests */
-.form-card div {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
-  padding: 10px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
+.quest-card p {
+  color: var(--muted);
+  line-height: 1.6;
 }
 
-.form-card button {
-  background: var(--accent2);
-  color: white;
+.quest-card div {
+  margin-top: 8px;
+}
+
+.quest-card small {
+  display: inline-block;
+  margin-top: 8px;
+  color: var(--muted);
+}
+
+.quest-card button {
+  background: var(--accent);
+  color: var(--dark);
   border: none;
-  padding: 6px 10px;
-  border-radius: 8px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  margin-top: 14px;
+  margin-right: 10px;
   cursor: pointer;
+  font-weight: 800;
+}
+
+.quest-card button:nth-of-type(2) {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+}
+
+/* alternative */
+.quest-card hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 18px 0;
+}
+
+.quest-card strong {
+  font-family: var(--font-head);
+  font-size: 18px;
+  color: #f3f5ef;
+}
+
+/* loading gif */
+.quest-card img {
+  max-width: 220px;
+}
+
+/* responsive */
+@media (max-width: 700px) {
+  .app {
+    padding: 14px;
+  }
+
+  header {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+
+  .stats {
+    justify-content: center;
+  }
+
+  header > div:last-child {
+    justify-content: center;
+  }
+
+  .logo {
+    font-size: 26px;
+  }
 }
