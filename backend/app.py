@@ -120,20 +120,32 @@ CAS_DNEVA_MAP = {
 }
 
 
-def ensure_profile_exists(user_id, username="Guest"):
-    profile = (
-        supabase.table("profiles")
-        .select("user_id")
-        .eq("user_id", user_id)
-        .execute()
-    )
+def ensure_profile_exists(user_id):
+    try:
+        profile = (
+            supabase.table("profiles")
+            .select("user_id")
+            .eq("user_id", user_id)
+            .execute()
+        )
 
-    if not profile.data:
-        supabase.table("profiles").insert({
-            "user_id": user_id,
-            "username": username,
-            "xp": 0,
-        }).execute()
+        if profile.data:
+            return
+
+        result = (
+            supabase.table("profiles")
+            .insert({
+                "user_id": user_id,
+                "username": "Guest",
+                "xp": 0,
+            })
+            .execute()
+        )
+
+        print("PROFILE CREATED:", result.data)
+
+    except Exception as e:
+        print("PROFILE CREATE ERROR:", e)
 
 
 def get_completed_quest_ids(user_id):
