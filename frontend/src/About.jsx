@@ -6,35 +6,75 @@ export default function About() {
       <section className="about-hero">
         <h1>About Sidebit</h1>
         <p>
-          Sidebit je aplikacija, ki ti pomaga najti majhne, zabavne in
-          koristne izzive glede na tvoje razpoloženje, energijo, lokacijo in
-          prosti čas.
+          Every moment can become a side quest.
         </p>
       </section>
 
-      <section className="about-card">
-        <h2>Naša ideja</h2>
-        <p>
-          Velikokrat imamo nekaj minut prostega časa, ampak ne vemo, kaj bi
-          počeli. Sidebit ti predlaga quest, ki se ujema s tvojo trenutno
-          situacijo — doma, zunaj, sam ali s prijatelji.
-        </p>
-      </section>
+      <section className="about-chat">
 
-      <section className="about-card">
-        <h2>Kako deluje?</h2>
-        <p>
-          Izbereš svoje trenutno stanje, aplikacija pa ti predlaga primeren
-          izziv. Ko quest opraviš, prejmeš XP in gradiš svoj napredek.
-        </p>
-      </section>
+        <div className="message left">
+          <h2>Traveler</h2>
+          <p>
+            Kaj je Sidebit?
+          </p>
+        </div>
 
-      <section className="about-card">
-        <h2>Zakaj Sidebit?</h2>
-        <p>
-          Namen aplikacije je, da vsak dan narediš nekaj malega zase — nekaj
-          aktivnega, ustvarjalnega, sproščujočega ali socialnega.
-        </p>
+        <div className="message right">
+          <h2>Guide</h2>
+          <p>
+            Sidebit je aplikacija, ki ti pomaga najti majhne, zabavne in
+            koristne izzive glede na tvoje razpoloženje, energijo,
+            lokacijo in prosti čas.
+          </p>
+        </div>
+
+        <div className="message left">
+          <h2>Traveler</h2>
+          <p>
+            In kako to deluje?
+          </p>
+        </div>
+
+        <div className="message right">
+          <h2>Guide</h2>
+          <p>
+            Izbereš svoje trenutno stanje — kako se počutiš, koliko časa
+            imaš in kje si — Sidebit pa ti predlaga quest,
+            ki se ujema s tvojim trenutkom.
+          </p>
+        </div>
+
+        <div className="message left">
+          <h2>Traveler</h2>
+          <p>
+            Kaj pa ko quest opravim?
+          </p>
+        </div>
+
+        <div className="message right">
+          <h2>Guide</h2>
+          <p>
+            Takrat prejmeš XP, beležiš svoj napredek in odkriješ nove
+            ideje za naslednji side quest.
+          </p>
+        </div>
+
+        <div className="message left">
+          <h2>Traveler</h2>
+          <p>
+            Zakaj sploh Sidebit?
+          </p>
+        </div>
+
+        <div className="message right">
+          <h2>Guide</h2>
+          <p>
+            Ker tudi nekaj prostih minut lahko postane mini avantura.
+            Nekaj aktivnega. Nekaj ustvarjalnega.
+            Nekaj samo zate.
+          </p>
+        </div>
+
       </section>
     </div>
   )

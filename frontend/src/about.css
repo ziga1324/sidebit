@@ -1,0 +1,74 @@
+.about-page {
+  min-height: 100vh;
+  padding: 40px 20px;
+  background:
+    linear-gradient(
+      180deg,
+      #d5dfdc 0%,
+      #90a59f 45%,
+      #52625d 100%
+    );
+  color: #edf2ed;
+  font-family: Georgia, serif;
+}
+
+.about-hero {
+  max-width: 850px;
+  margin: 0 auto 40px;
+  text-align: center;
+}
+
+.about-hero h1 {
+  font-size: 48px;
+  margin-bottom: 14px;
+  color: #f3f5ef;
+  letter-spacing: 2px;
+}
+
+.about-hero p {
+  font-size: 18px;
+  line-height: 1.7;
+  color: #d6e0d8;
+}
+
+/* conversation */
+.about-chat {
+  max-width: 850px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.message {
+  max-width: 70%;
+  padding: 18px 22px;
+  border-radius: 18px;
+  line-height: 1.6;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+}
+
+.message h2 {
+  margin: 0 0 8px 0;
+  font-size: 20px;
+}
+
+.message p {
+  margin: 0;
+  font-size: 16px;
+}
+
+.left {
+  align-self: flex-start;
+  background: rgba(24, 36, 34, 0.88);
+  color: #edf2ed;
+  border: 1px solid rgba(220,235,228,0.14);
+}
+
+.right {
+  align-self: flex-end;
+  background: rgba(223, 230, 216, 0.92);
+  color: #17201d;
+  border: 1px solid rgba(255,255,255,0.25);
+}
