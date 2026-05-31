@@ -166,7 +166,7 @@ export default function Home() {
   return (
     <div className="app">
       <header>
-  <div className="logo">ZestQuest</div>
+  <div className="logo">Sidebit</div>
 
   <div className="stats">
     <div>XP {stats.xp}</div>

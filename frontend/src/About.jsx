@@ -4,9 +4,9 @@ export default function About() {
   return (
     <div className="about-page">
       <section className="about-hero">
-        <h1>About ZestQuest</h1>
+        <h1>About Sidebit</h1>
         <p>
-          ZestQuest je aplikacija, ki ti pomaga najti majhne, zabavne in
+          Sidebit je aplikacija, ki ti pomaga najti majhne, zabavne in
           koristne izzive glede na tvoje razpoloženje, energijo, lokacijo in
           prosti čas.
         </p>
@@ -16,7 +16,7 @@ export default function About() {
         <h2>Naša ideja</h2>
         <p>
           Velikokrat imamo nekaj minut prostega časa, ampak ne vemo, kaj bi
-          počeli. ZestQuest ti predlaga quest, ki se ujema s tvojo trenutno
+          počeli. Sidebit ti predlaga quest, ki se ujema s tvojo trenutno
           situacijo — doma, zunaj, sam ali s prijatelji.
         </p>
       </section>
@@ -30,7 +30,7 @@ export default function About() {
       </section>
 
       <section className="about-card">
-        <h2>Zakaj ZestQuest?</h2>
+        <h2>Zakaj Sidebit?</h2>
         <p>
           Namen aplikacije je, da vsak dan narediš nekaj malega zase — nekaj
           aktivnega, ustvarjalnega, sproščujočega ali socialnega.
