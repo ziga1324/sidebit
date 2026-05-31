@@ -120,7 +120,7 @@ CAS_DNEVA_MAP = {
 }
 
 
-def ensure_profile_exists(user_id):
+def ensure_profile_exists(user_id, username="Guest"):
     profile = (
         supabase.table("profiles")
         .select("user_id")
@@ -131,7 +131,7 @@ def ensure_profile_exists(user_id):
     if not profile.data:
         supabase.table("profiles").insert({
             "user_id": user_id,
-            "username": "Guest",
+            "username": username,
             "xp": 0,
         }).execute()
 
