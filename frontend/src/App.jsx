@@ -4,6 +4,7 @@ import Landing from "./pages/Landing"
 import Login from "./pages/Login"
 import Register from "./pages/Register"
 import Home from "./pages/Home"
+import About from "./About"
 
 export default function App() {
   const user = localStorage.getItem("user")
@@ -12,14 +13,15 @@ export default function App() {
   return (
     <Routes>
 
-      {/* START PAGE */}
+
       <Route path="/" element={<Landing />} />
 
-      {/* AUTH */}
+      <Route path="/about" element={<About />} />
+
+
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
 
-      {/* PROTECTED APP */}
       <Route
         path="/app"
         element={
@@ -31,7 +33,7 @@ export default function App() {
         }
       />
 
-      {/* fallback */}
+
       <Route path="*" element={<Navigate to="/" replace />} />
 
     </Routes>
