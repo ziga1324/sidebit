@@ -30,8 +30,7 @@ export default function Register() {
           {
             user_id: user.id,
             username: email,
-            xp: 0,
-            streak: 0
+            xp: 0
           }
         ])
 
