@@ -89,7 +89,7 @@ export default function About() {
             Sta zagovornika pametnega ter zanimivega porabljanja časa.
             To sta Žiga Žurga in Jakob Guček.
           </p>
-          <img src="/home/ziga/Desktop/PROJEKT/frontend/src/Screenshot_2026-05-31_16-28-10.png" alt="Slika stvariteljev" />
+          <img src="Screenshot_2026-05-31_16-28-10.png" alt="Slika stvariteljev" />
         </div>
 
       </section>
